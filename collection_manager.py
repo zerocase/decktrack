@@ -11,8 +11,20 @@ class CollectionManager:
         c.execute('''CREATE TABLE IF NOT EXISTS collections
                      (id INTEGER PRIMARY KEY,
                       name TEXT NOT NULL,
-                      collection_type TEXT NOT NULL,
-                      track_ids TEXT NOT NULL)''')
+                      collection_type TEXT NOT NULL)''')
+
+        c.execute('''CREATE TABLE IF NOT EXISTS tracks
+                     (id INTEGER PRIMARY KEY,
+                      title TEXT,
+                      artist TEXT,
+                      duration INTEGER)''')
+
+        c.execute('''CREATE TABLE IF NOT EXISTS collections_tracks
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      collection_id INTEGER,
+                      track_id INTEGER,
+                      FOREIGN KEY(collection_id) REFERENCES collections(id),
+                      FOREIGN KEY(track_id) REFERENCES tracks(id))''')
         self.conn.commit()
 
     def add_collection(self, collection):
@@ -59,7 +71,7 @@ class CollectionManager:
         if result is None:
             return None
         name, collection_type, track_ids = result
-        return Collection(name, collection_type, track_ids.split(","))
+        return Collection(name, collection_type, track_ids.split(","), self.conn)
     
     def get_track_ids(self, conn):
         c = conn.cursor()

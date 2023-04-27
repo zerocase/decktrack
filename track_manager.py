@@ -2,7 +2,7 @@ import sqlite3
 from track import Track
 
 class TrackManager:
-    def __init__(self, db_file ="data/track_database.db"):
+    def __init__(self, db_file ="data/track_data.db"):
         self.db_file = db_file
         self.conn = sqlite3.connect(db_file)
         self.create_tables()
@@ -22,7 +22,8 @@ class TrackManager:
             bpm FLOAT,
             loudness FLOAT,
             danceability FLOAT,
-            energy FLOAT
+            energy FLOAT,
+            ldir TEXT
         )
         """)
         self.conn.commit()
@@ -30,8 +31,8 @@ class TrackManager:
     def add_track(self, track):
         cursor = self.conn.cursor()
         cursor.execute("""
-        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, ldir)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             track.title,
             track.artist,
@@ -40,7 +41,8 @@ class TrackManager:
             track.bpm,
             track.loudness,
             track.danceability,
-            track.energy
+            track.energy,
+            track.ldir
         ))
         self.conn.commit()
 
