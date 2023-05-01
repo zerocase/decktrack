@@ -5,12 +5,12 @@ class TrackManager:
     def __init__(self, db_file ="data/track_data.db"):
         self.db_file = db_file
         self.conn = sqlite3.connect(db_file)
-        self.create_tables()
+        self.create_table()
 
     def __del__(self):
         self.conn.close()
 
-    def create_tables(self):
+    def create_table(self):
         cursor = self.conn.cursor()
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS tracks (
@@ -23,7 +23,7 @@ class TrackManager:
             loudness FLOAT,
             danceability FLOAT,
             energy FLOAT,
-            ldir TEXT
+            odir TEXT
         )
         """)
         self.conn.commit()
@@ -31,7 +31,7 @@ class TrackManager:
     def add_track(self, track):
         cursor = self.conn.cursor()
         cursor.execute("""
-        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, ldir)
+        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, odir)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             track.title,
@@ -42,14 +42,14 @@ class TrackManager:
             track.loudness,
             track.danceability,
             track.energy,
-            track.ldir
+            track.odir
         ))
         self.conn.commit()
 
     def get_track_by_id(self, id):
         cursor = self.conn.cursor()
         cursor.execute("""
-        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy
+        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         WHERE id=?
         """, (id,))
@@ -62,7 +62,7 @@ class TrackManager:
     def get_all_tracks(self):
         cursor = self.conn.cursor()
         cursor.execute("""
-        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy
+        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         """)
         rows = cursor.fetchall()
@@ -72,7 +72,7 @@ class TrackManager:
         cursor = self.conn.cursor()
         cursor.execute("""
         UPDATE tracks
-        SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?
+        SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?, odir=?
         WHERE id=?
         """, (
             track.title,
