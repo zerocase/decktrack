@@ -1,35 +1,14 @@
 import sqlite3
+import db
 from track import Track
 
 class TrackManager:
-    def __init__(self, db_file ="data/track_data.db"):
-        self.db_file = db_file
-        self.conn = sqlite3.connect(db_file)
-        self.create_table()
-
+    
     def __del__(self):
-        self.conn.close()
-
-    def create_table(self):
-        cursor = self.conn.cursor()
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS tracks (
-            id INTEGER PRIMARY KEY,
-            title TEXT,
-            artist TEXT,
-            duration FLOAT,
-            key INTEGER,
-            bpm FLOAT,
-            loudness FLOAT,
-            danceability FLOAT,
-            energy FLOAT,
-            odir TEXT
-        )
-        """)
-        self.conn.commit()
+        db.conn.close()
 
     def add_track(self, track):
-        cursor = self.conn.cursor()
+        cursor = db.conn.cursor()
         cursor.execute("""
         INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, odir)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -44,12 +23,12 @@ class TrackManager:
             track.energy,
             track.odir
         ))
-        self.conn.commit()
+        db.conn.commit()
 
     def get_track_by_id(self, id):
-        cursor = self.conn.cursor()
+        cursor = db.conn.cursor()
         cursor.execute("""
-        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
+        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         WHERE id=?
         """, (id,))
@@ -60,20 +39,20 @@ class TrackManager:
             return None
 
     def get_all_tracks(self):
-        cursor = self.conn.cursor()
+        cursor = db.conn.cursor()
         cursor.execute("""
-        SELECT id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
+        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         """)
         rows = cursor.fetchall()
         return [Track(*row) for row in rows]
 
     def update_track(self, track):
-        cursor = self.conn.cursor()
+        cursor = db.conn.cursor()
         cursor.execute("""
         UPDATE tracks
         SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?, odir=?
-        WHERE id=?
+        WHERE track_id=?
         """, (
             track.title,
             track.artist,
@@ -85,12 +64,12 @@ class TrackManager:
             track.energy,
             track.id
         ))
-        self.conn.commit()
+        db.conn.commit()
 
     def delete_track(self, track):
-        cursor = self.conn.cursor()
+        cursor = db.conn.cursor()
         cursor.execute("""
         DELETE FROM tracks
-        WHERE id=?
+        WHERE track_id=?
         """, (track.id,))
-        self.conn.commit()
+        db.conn.commit()

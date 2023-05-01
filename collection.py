@@ -1,7 +1,9 @@
 from track import Track
 
 class Collection:
-    def __init__(self, name, collection_type, tracklist_ids):
+    
+    def __init__(self, collection_id, name, collection_type, tracklist_ids):
+        self.collection_id = collection_id
         self.name = name
         self.collection_type = collection_type
         self.tracklist_ids = tracklist_ids

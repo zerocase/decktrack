@@ -1,35 +1,26 @@
 import sqlite3
-
+import db
 from collection import Collection
 
-class CollectionManager:
-    def __init__(self, db_file ="data/collection_data.db"):
-        self.db_file = db_file
-        self.conn = sqlite3.connect(db_file)
-        self.create_table()
-    
+class CollectionManager:  
+
     def __del__(self):
-        self.conn.close()
-    
-    def create_table(self):
-        c = self.conn.cursor()
-        c.execute('''CREATE TABLE IF NOT EXISTS collections
-                     (
-                        id INTEGER PRIMARY KEY,
-                      name TEXT NOT NULL,
-                      collection_type TEXT NOT NULL,
-                      tracklist_ids TEXT NOT NULL)''')
-        self.conn.commit()
+        db.conn.close()
+
     
     def add_collection(self, collection):
-        c = self.conn.cursor()
+        c = db.conn.cursor()
         c.execute("INSERT INTO collections (name, collection_type, tracklist_ids) VALUES (?, ?, ?)",
                   (collection.get_name(), collection.get_type(), collection.get_tracklist()))
-        self.conn.commit()
+        db.conn.commit()
     
     def remove_collection(self, collection):
-        c = self.conn.cursor()
-        c.execute("DELETE FROM collections WHERE id=?", (collection.id))
-        self.conn.commit()
-    
-    
+        c = db.conn.cursor()
+        c.execute("DELETE FROM collections WHERE collection_id=?", (collection.collection_id,))
+        db.conn.commit()
+
+    def add_track_to_collection(self, collection, track):
+        c = db.conn.cursor()
+        c.execute("INSERT INTO relations (collection_id, track_id) VALUES (?, ?)",
+                  (collection.collection_id, track.track_id))
+        db.conn.commit()
