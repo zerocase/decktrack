@@ -11,8 +11,7 @@ def create_collections_table():
                     (
                         collection_id INTEGER PRIMARY KEY,
                       name TEXT NOT NULL,
-                      collection_type TEXT NOT NULL,
-                      tracklist_ids TEXT NOT NULL)''')
+                      collection_type TEXT NOT NULL)''')
     conn.commit()
 
 

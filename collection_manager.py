@@ -10,9 +10,11 @@ class CollectionManager:
     
     def add_collection(self, collection):
         c = db.conn.cursor()
-        c.execute("INSERT INTO collections (name, collection_type, tracklist_ids) VALUES (?, ?, ?)",
-                  (collection.get_name(), collection.get_type(), collection.get_tracklist()))
+        c.execute("INSERT INTO collections (name, collection_type) VALUES (?, ?)",
+                  (collection.get_name(), collection.get_type()))
         db.conn.commit()
+        cid = c.lastrowid
+        collection.collection_id = cid
     
     def remove_collection(self, collection):
         c = db.conn.cursor()

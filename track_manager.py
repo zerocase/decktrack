@@ -8,8 +8,8 @@ class TrackManager:
         db.conn.close()
 
     def add_track(self, track):
-        cursor = db.conn.cursor()
-        cursor.execute("""
+        c = db.conn.cursor()
+        c.execute("""
         INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, odir)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -24,32 +24,35 @@ class TrackManager:
             track.odir
         ))
         db.conn.commit()
+        tid = c.lastrowid
+        track.track_id = tid
+
 
     def get_track_by_id(self, id):
-        cursor = db.conn.cursor()
-        cursor.execute("""
+        c = db.conn.cursor()
+        c.execute("""
         SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         WHERE id=?
         """, (id,))
-        row = cursor.fetchone()
+        row = c.fetchone()
         if row:
             return Track(*row)
         else:
             return None
 
     def get_all_tracks(self):
-        cursor = db.conn.cursor()
-        cursor.execute("""
+        c = db.conn.cursor()
+        c.execute("""
         SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
         FROM tracks
         """)
-        rows = cursor.fetchall()
+        rows = c.fetchall()
         return [Track(*row) for row in rows]
 
     def update_track(self, track):
-        cursor = db.conn.cursor()
-        cursor.execute("""
+        c = db.conn.cursor()
+        c.execute("""
         UPDATE tracks
         SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?, odir=?
         WHERE track_id=?
@@ -62,14 +65,14 @@ class TrackManager:
             track.loudness,
             track.danceability,
             track.energy,
-            track.id
+            track.track_id
         ))
         db.conn.commit()
 
     def delete_track(self, track):
-        cursor = db.conn.cursor()
-        cursor.execute("""
+        c = db.conn.cursor()
+        c.execute("""
         DELETE FROM tracks
         WHERE track_id=?
-        """, (track.id,))
+        """, (track.track_id,))
         db.conn.commit()
