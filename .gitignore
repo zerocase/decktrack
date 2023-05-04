@@ -130,3 +130,6 @@ dmypy.json
 
 #Local Test Databases & data
 data/*
+
+#Local Environment
+deckenv/*

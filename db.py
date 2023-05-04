@@ -28,6 +28,7 @@ def create_tracks_table():
             loudness FLOAT,
             danceability FLOAT,
             energy FLOAT,
+            quality FLOAT,
             odir TEXT
         )
         """)

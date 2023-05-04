@@ -6,7 +6,6 @@ class CollectionManager:
 
     def __del__(self):
         db.conn.close()
-
     
     def add_collection(self, collection):
         c = db.conn.cursor()
@@ -26,3 +25,10 @@ class CollectionManager:
         c.execute("INSERT INTO relations (collection_id, track_id) VALUES (?, ?)",
                   (collection.collection_id, track.track_id))
         db.conn.commit()
+    
+    def get_collections(self):
+        c = db.conn.cursor()
+        c.execute("SELECT name FROM collections;")
+        rows = c.fetchall()
+        for row in rows:
+            print(row)

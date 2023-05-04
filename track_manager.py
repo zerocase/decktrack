@@ -10,8 +10,8 @@ class TrackManager:
     def add_track(self, track):
         c = db.conn.cursor()
         c.execute("""
-        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, odir)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO tracks (title, artist, duration, key, bpm, loudness, danceability, energy, quality, odir)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             track.title,
             track.artist,
@@ -21,6 +21,7 @@ class TrackManager:
             track.loudness,
             track.danceability,
             track.energy,
+            track.quality,
             track.odir
         ))
         db.conn.commit()
@@ -31,7 +32,7 @@ class TrackManager:
     def get_track_by_id(self, id):
         c = db.conn.cursor()
         c.execute("""
-        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
+        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, quality, odir
         FROM tracks
         WHERE id=?
         """, (id,))
@@ -44,7 +45,7 @@ class TrackManager:
     def get_all_tracks(self):
         c = db.conn.cursor()
         c.execute("""
-        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, odir
+        SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, quality, odir
         FROM tracks
         """)
         rows = c.fetchall()
@@ -54,7 +55,7 @@ class TrackManager:
         c = db.conn.cursor()
         c.execute("""
         UPDATE tracks
-        SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?, odir=?
+        SET title=?, artist=?, duration=?, key=?, bpm=?, loudness=?, danceability=?, energy=?, quality=?, odir=?
         WHERE track_id=?
         """, (
             track.title,
@@ -65,6 +66,7 @@ class TrackManager:
             track.loudness,
             track.danceability,
             track.energy,
+            track.quality,
             track.track_id
         ))
         db.conn.commit()
