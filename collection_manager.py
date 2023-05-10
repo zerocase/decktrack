@@ -28,7 +28,6 @@ class CollectionManager:
     
     def get_collections(self):
         c = db.conn.cursor()
-        c.execute("SELECT name FROM collections;")
-        rows = c.fetchall()
-        for row in rows:
-            print(row)
+        names = [name[0] for name in c.execute("SELECT name FROM collections")]
+        return names
+
