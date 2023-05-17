@@ -1,6 +1,7 @@
 import sqlite3
 import db
 from collection import Collection
+from track import Track
 
 class CollectionManager:  
 
@@ -30,4 +31,15 @@ class CollectionManager:
         c = db.conn.cursor()
         names = [name[0] for name in c.execute("SELECT name FROM collections")]
         return names
+    
+    def get_tracks_by_collection_name(self, name):
+        c = db.conn.cursor()
+        c.execute('''SELECT title, artist, duration, key, bpm, loudness, danceability, energy, quality  from tracks t 
+                    INNER JOIN
+                    relations r  on t.track_id = r.track_id
+                    INNER JOIN
+                    collections c on c.collection_id = r.collection_id
+                    WHERE name = ?''', (name,))
+        rows = c.fetchall()
+        return rows
 

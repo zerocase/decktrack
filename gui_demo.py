@@ -17,6 +17,12 @@ info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Dancea
 def print_me(sender):
     print(f"Menu Item: {sender}")
 
+def print_selected(sender, collection_name):
+    track_list = collection_manager.get_tracks_by_collection_name(collection_name)
+    print(track_list)
+
+
+
 dpg.create_context()
 with dpg.window(tag="Primary Window"):
 
@@ -31,11 +37,16 @@ with dpg.window(tag="Primary Window"):
                 dpg.add_menu_item(label="Setting 2", callback=print_me)
         dpg.add_menu_item(label="Help", callback=print_me)
     # Create a horizontal layout to hold the ListBox and Table
+    dpg.add_button(label='+', callback=print_me, width=200)
     with dpg.group(horizontal=True):
             # Create the ListBox
-        with dpg.group(label='Collections'):
-            dpg.add_button(label='+', callback=print_me, width=200)
-            collection_list = dpg.add_listbox(items=(collection_manager.get_collections()),num_items=list_items, width=400)
+        #with dpg.group(label='Collections'):
+        #    dpg.add_button(label='+', callback=print_me, width=200)
+        #    collection_list = dpg.add_listbox(items=(collection_manager.get_collections()),num_items=list_items, width=400, callback=print_selected)
+
+        with dpg.child_window(border=False, height=-1, width=400):
+            dpg.add_listbox(items=(collection_manager.get_collections()), width=-1, num_items=100, callback=print_selected)
+
         
         # Create the Table
         with dpg.table(

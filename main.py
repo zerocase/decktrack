@@ -4,14 +4,18 @@ from collection_creator import CollectionCreator
 from track import Track
 from collection import Collection
 import db
+import time
+
 
 if __name__ == '__main__':
-    db.initialize_tables()
+    start_time = time.time()
+    #db.initialize_tables()
     track_manager = TrackManager()  
     collection_manager = CollectionManager()
     collection_creator = CollectionCreator()
-    dir1 = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Ikiryō - At Dawn (2021)"
+    dir1 = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Bereneces - Chambers (2021)"
     collection_creator.collection_from_folder(dir1)
+    print("--- %s seconds ---" % (time.time() - start_time))
 #    print(collection_manager.get_collections())
     #tr1 = Track("Track 1", "Artist 1", 180, "C", 120, -6, 0.75, 0.8, "pathtosong")
    # tr2 = Track("Track 2", "Artist 2", 240, "G", 140, -4, 0.85, 0.9, "pathtosong")

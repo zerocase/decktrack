@@ -59,10 +59,10 @@ class TrackAnalysis:
 
     def analyze_track(audio_file_path):
         # Load Track on Mono
-        y, sr = librosa.load(audio_file_path, sr=22050, mono=True)
+        y, sr = librosa.load(audio_file_path)
 
         # Compute BPM
-        bpm, beats = librosa.beat.beat_track(y=y, sr=sr)
+        bpm, beats = librosa.beat.beat_track(y=y, sr=sr, units='time', trim=False, hop_length=256)
 
         # Compute energy rms
         energy = librosa.feature.rms(y=y)
@@ -79,6 +79,9 @@ class TrackAnalysis:
         # Compute Danceability
         danceability = TrackAnalysis.dfa(y)
 
-        analysis_data = [round(duration, 2), key, round(bpm, 2), round(loudness.mean(), 2), round(danceability, 2), round(energy.mean(), 2)]
+        analysis_data = [round(duration, 2), key, round(bpm, 2), round(loudness.mean(), 2), danceability, round(energy.mean(), 2)]
 
         return analysis_data
+
+#tdir = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Ikiryō - At Dawn (2021)//01. Ikiryō - At Dawn.flac"
+#print(TrackAnalysis.analyze_track(tdir))
