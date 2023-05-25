@@ -18,11 +18,11 @@ def print_me(sender):
     print(f"Menu Item: {sender}")
 
 def get_selected_collection(sender, collection_name):
-    dpg.delete_item("Collections Info" ,children_only=True)
     #print(collection_name)
     get_collection_info(collection_name)
 
 def get_collection_info(collection_name):
+    dpg.delete_item("Collections Info" ,children_only=True)
     tracks_info = collection_manager.get_tracks_by_collection_name(collection_name)
     w = len(info_columns)
     h = len(tracks_info)
@@ -107,8 +107,8 @@ def initialize_gui_elements():
                 # Add some columns to the table
                 for column in info_columns:
                     dpg.add_table_column(label=column)
-        default_selected = dpg.get_value("Collections")
-        get_collection_info(default_selected)
+            default_selected = dpg.get_value("Collections")
+            get_collection_info(default_selected)
         # Create the Table
 
 """         with dpg.table(
