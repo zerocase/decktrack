@@ -4,9 +4,11 @@ from collection import Collection
 from track import Track
 
 class CollectionManager:  
+    def __init__(self):
+        self.conn = db.conn
 
-    def __del__(self):
-        db.conn.close()
+    #def __del__(self):
+    #    db.conn.close()
     
     def add_collection(self, collection):
         c = db.conn.cursor()

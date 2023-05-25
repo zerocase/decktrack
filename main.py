@@ -9,12 +9,12 @@ import time
 
 if __name__ == '__main__':
     start_time = time.time()
-    #db.initialize_tables()
+    db.initialize_tables()
     track_manager = TrackManager()  
     collection_manager = CollectionManager()
     collection_creator = CollectionCreator()
     dir1 = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Bereneces - Chambers (2021)"
-    collection_creator.collection_from_folder(dir1)
+    collection_creator.collection_from_folder(dir1, False)
     print("--- %s seconds ---" % (time.time() - start_time))
 #    print(collection_manager.get_collections())
     #tr1 = Track("Track 1", "Artist 1", 180, "C", 120, -6, 0.75, 0.8, "pathtosong")

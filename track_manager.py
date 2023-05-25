@@ -4,8 +4,8 @@ from track import Track
 
 class TrackManager:
     
-    def __del__(self):
-        db.conn.close()
+    #def __del__(self):
+    #    db.conn.close()
 
     def add_track(self, track):
         c = db.conn.cursor()
