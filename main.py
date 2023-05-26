@@ -14,7 +14,7 @@ if __name__ == '__main__':
     collection_manager = CollectionManager()
     collection_creator = CollectionCreator()
     dir1 = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Bereneces - Chambers (2021)"
-    collection_creator.collection_from_folder(dir1, False)
+    collection_creator.collection_from_folder(dir1, True)
     print("--- %s seconds ---" % (time.time() - start_time))
 #    print(collection_manager.get_collections())
     #tr1 = Track("Track 1", "Artist 1", 180, "C", 120, -6, 0.75, 0.8, "pathtosong")

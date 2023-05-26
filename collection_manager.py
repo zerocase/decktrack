@@ -45,3 +45,4 @@ class CollectionManager:
         rows = c.fetchall()
         return rows
 
+

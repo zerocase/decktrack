@@ -78,3 +78,16 @@ class TrackManager:
         WHERE track_id=?
         """, (track.track_id,))
         db.conn.commit()
+    
+    def get_odir(self, track):
+        c = db.conn.cursor()
+        c.execute("""
+        SELECT odir
+        FROM tracks
+        WHERE track_id=?
+        """, (track.track_id,))
+        row = c.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
