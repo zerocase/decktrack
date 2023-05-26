@@ -52,20 +52,30 @@ def prompt_callback(sender, dir, analyze):
         collection_creator.collection_from_folder(dir,False)
     print(dir, analyze)
     refresh_collections_list()
-    refresh_info_pane("Done")
+    refresh_info_pane("Done...")
     #collection_creator.collection_from_folder(dir,True)
 
 
 def show_info(app_data):
     dir = app_data['file_path_name']
     print(dir)
-    with dpg.window(label="Delete Files", modal=True, show=True, tag="modal_id", no_title_bar=True):
-        dpg.add_text("Do you want to analyze the tracks?")
-        #dpg.add_separator()
-        #dpg.add_checkbox(label="Don't ask me next time")
-        with dpg.group(horizontal=True):
-            dpg.add_button(label="Yes", width=75, callback=lambda x: prompt_callback(x, dir, True))
-            dpg.add_button(label="No", width=75, callback=lambda x: prompt_callback(x, dir, False))
+    with dpg.mutex():
+
+        viewport_width = dpg.get_viewport_client_width()
+        viewport_height = dpg.get_viewport_client_height()
+
+        with dpg.window(label="Delete Files", modal=True, show=True, tag="modal_id", no_title_bar=True) as modal_id:
+            dpg.add_text("Do you want to analyze the tracks?")
+            dpg.add_separator()
+            #dpg.add_checkbox(label="Don't ask me next time")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Yes", width=75, callback=lambda x: prompt_callback(x, dir, True))
+                dpg.add_button(label="No", width=75, callback=lambda x: prompt_callback(x, dir, False))
+    dpg.split_frame()
+    width = dpg.get_item_width(modal_id)
+    height = dpg.get_item_height(modal_id)
+    dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
+
 
 
 
