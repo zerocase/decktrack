@@ -1,5 +1,6 @@
 class Track:
     def __init__(self, title, artist, duration, key, bpm, loudness, danceability, energy, quality,odir):
+        self.track_id = None
         self.title = title
         self.artist = artist
         self.duration = duration
@@ -13,4 +14,4 @@ class Track:
 
 
     def __str__(self):
-        return f"{self.title} - {self.artist} [{self.duration}s, key={self.key}, bpm={self.bpm}, loudness={self.loudness}, danceability={self.danceability}, energy={self.energy}, quality={self.quality}, odir={self.odir}"
+        return f"{self.track_id} - {self.title} - {self.artist} [{self.duration}s, key={self.key}, bpm={self.bpm}, loudness={self.loudness}, danceability={self.danceability}, energy={self.energy}, quality={self.quality}, odir={self.odir}"

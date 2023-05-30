@@ -2,33 +2,53 @@ import librosa
 import numpy as np
 
 class TrackAnalysis:
-    def krumhansl_schmuckler(y, sr):
-        chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-
+    def krumhansl_schmuckler(waveform, sr):
+        waveform = waveform
+        sr = sr
+        tstart=22
+        tend = 33
+        
+        tstart = librosa.time_to_samples(tstart, sr=sr)
+        tend = librosa.time_to_samples(tend, sr=sr)
         # Calculate key profiles
-        key_profiles = np.zeros((12, chroma.shape[1]))
+        y_segment = waveform[tstart:tend]
+        chromograph = librosa.feature.chroma_cqt(y=y_segment, sr=sr, bins_per_octave=24)
+# chroma_vals is the amount of each pitch class present in this time interval
+        chroma_vals = []
         for i in range(12):
-            chroma_cqt = librosa.feature.chroma_cqt(y=y, sr=sr, C=None, hop_length=512, fmin=None, n_chroma=12,
-                                                    bins_per_octave=36, tuning=i, norm=2, threshold=None,
-                                                    window=None)
-            key_profiles[i] = np.sum(chroma * chroma_cqt, axis=0)
+            chroma_vals.append(np.sum(chromograph[i]))
+        pitches = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+        # dictionary relating pitch names to the associated intensity in the song
+        keyfreqs = {pitches[i]: chroma_vals[i] for i in range(12)} 
+        
+        keys = [pitches[i] + ' major' for i in range(12)] + [pitches[i] + ' minor' for i in range(12)]
 
-        # Apply Krumhansl-Schmuckler weighting
-        weights = np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88])
-        weighted_profiles = key_profiles * weights[:, np.newaxis]
+        # use of the Krumhansl-Schmuckler key-finding algorithm, which compares the chroma
+        # data above to typical profiles of major and minor keys:
+        maj_profile = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]
+        min_profile = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]
 
-        # Find key with highest correlation
-        correlations = np.zeros(12)
+        # finds correlations between the amount of each pitch class in the time interval and the above profiles,
+        # starting on each of the 12 pitches. then creates dict of the musical keys (major/minor) to the correlation
+        min_key_corrs = []
+        maj_key_corrs = []
         for i in range(12):
-            correlations[i] = np.corrcoef(weighted_profiles[i], np.sum(weighted_profiles, axis=0))[0, 1]
-        key = np.argmax(correlations)
+            key_test = [keyfreqs.get(pitches[(i + m)%12]) for m in range(12)]
+            # correlation coefficients (strengths of correlation for each key)
+            maj_key_corrs.append(round(np.corrcoef(maj_profile, key_test)[1,0], 3))
+            min_key_corrs.append(round(np.corrcoef(min_profile, key_test)[1,0], 3))
 
-        # Convert key index to key name
-        key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        key_name = key_names[key]
-
-        return key_name
-
+        # names of all major and minor keys
+        key_dict = {**{keys[i]: maj_key_corrs[i] for i in range(12)}, 
+                         **{keys[i+12]: min_key_corrs[i] for i in range(12)}}
+        
+        # this attribute represents the key determined by the algorithm
+        key = max(key_dict, key=key_dict.get)
+        bestcorr = max(key_dict.values())
+        print(key)
+        return key
+    
+    
     def dfa(y, minTau=10, maxTau=100):
         # Convert audio to mono if it is stereo
         if y.ndim > 1:
