@@ -23,6 +23,11 @@ def print_me(sender):
 def refresh_info_pane(info):
     dpg.delete_item("Information Pane")
     dpg.add_text(info, tag="Information Pane", parent="Info Pane Window")
+    #with dpg.group(horizontal=True, tag="Pane Group"):
+        #collection = dpg.get_value("Collections")
+        #dpg.add_text("thing", tag="collinfo", parent="Info Pane Window")
+
+
 
 
 def get_selected_collection(sender, collection_name):
@@ -105,8 +110,77 @@ def update_table(w, h, table_matrix):
                 with dpg.table_row(parent="Collections Info"):
                     for column in range(w):
                         #print(row, column)
-                        dpg.add_button(label= str(table_matrix[row][column]), width=-1)
-                        dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        #print(column)
+                        if column == 0:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                dpg.add_button(label= str(table_matrix[row][column]), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif column == 1:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                dpg.add_button(label= str(table_matrix[row][column]), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif  column == 2:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                duration_s = int(table_matrix[row][column])
+                                duration_m = duration_s // 60
+                                duration_s = duration_s % 60
+                                dpg.add_button(label= str(duration_m) + "m " + str(duration_s) + "s", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif  column == 3:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                dpg.add_button(label= str(table_matrix[row][column]), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif  column == 4:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                rounded_bpm = round(table_matrix[row][column], 2)
+                                dpg.add_button(label= str(rounded_bpm), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif  column == 5:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                rounded_loudness = round(table_matrix[row][column], 2)
+                                dpg.add_button(label= str(rounded_loudness), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif  column == 6:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                dpg.add_button(label= str(table_matrix[row][column]), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        elif column == 7:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                pertcentage = (table_matrix[row][column] * 100)
+                                intified = int(pertcentage)
+                                dpg.add_button(label= str(intified), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        else:
+                            if table_matrix[row][column] is None:
+                                dpg.add_button(label= "None", width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                            else:
+                                dpg.add_button(label= str(table_matrix[row][column]), width=-1)
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
 
             
     #    for i in w:
@@ -202,25 +276,8 @@ def initialize_gui_elements():
     with dpg.group():
         with dpg.child_window(parent="Primary Window",tag="Info Pane Window", width=-1, no_scrollbar=True, height=viewport_height*0.020, border=False):
             refresh_info_pane("Ready...")
-"""         with dpg.table(
-            borders_outerV=True,
-            borders_outerH=True,
-            borders_innerV=True,
-            borders_innerH=True,
-            scrollY=True,
-            freeze_rows=1,
-            height=-1,
-        ):
-                
-                # Add some columns to the table
-            for column in info_columns:
-                dpg.add_table_column(label= column)
-                
-                # Add some rows to the table
-            for i in range(0, 3):
-                with dpg.table_row():
-                    for j in range(0, 9):
-                        dpg.add_text(f"Row{i} Column{j}") """
+
+
 
 dpg.create_context()
 
