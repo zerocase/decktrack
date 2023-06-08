@@ -6,7 +6,6 @@ from track import Track
 from collection import Collection
 import db
 
-
 track_manager = TrackManager()  
 collection_manager = CollectionManager()
 collection_creator = CollectionCreator()
@@ -14,20 +13,34 @@ collection_creator = CollectionCreator()
 list_items= 55
 info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Danceability", "Energy", "Quality"]
 
-viewport_width = 1920
-viewport_height = 1080
-
 def print_me(sender):
     print(f"Menu Item: {sender}")
 
 def refresh_info_pane(info):
-    dpg.delete_item("Information Pane")
-    dpg.add_text(info, tag="Information Pane", parent="Info Pane Window")
+    dpg.delete_item("Info Pane Window")
+    with dpg.child_window(parent="button_group",tag="Info Pane Window", width=-1, height=23, border=False):
+        dpg.add_text(info, tag="Information Pane")
     #with dpg.group(horizontal=True, tag="Pane Group"):
         #collection = dpg.get_value("Collections")
         #dpg.add_text("thing", tag="collinfo", parent="Info Pane Window")
 
+def settings_window(sender):
+    with dpg.mutex():
 
+        viewport_width = dpg.get_viewport_client_width()
+        viewport_height = dpg.get_viewport_client_height()
+
+        with dpg.window(label="Settings", modal=True, show=True, tag="modal_id", no_title_bar=True) as modal_id:
+                
+            dpg.add_separator()
+            #dpg.add_checkbox(label="Don't ask me next time")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Yes", width=75, callback=lambda x: prompt_callback(x, dir, True))
+                dpg.add_button(label="No", width=75, callback=lambda x: prompt_callback(x, dir, False))
+    dpg.split_frame()
+    width = dpg.get_item_width(modal_id)
+    height = dpg.get_item_height(modal_id)
+    dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])   
 
 
 def get_selected_collection(sender, collection_name):
@@ -60,6 +73,8 @@ def prompt_callback(sender, dir, analyze):
         refresh_info_pane("Scanning..." + " " + dir)
         collection_creator.collection_from_folder(dir,False)
     print(dir, analyze)
+    sel_row = dpg.get_value("Collections")
+    get_collection_info(sel_row)
     refresh_collections_list()
     refresh_info_pane("Done...")
     #collection_creator.collection_from_folder(dir,True)
@@ -95,7 +110,6 @@ def callback(sender, app_data):
     
     show_info(app_data)
     #collection_creator.collection_from_folder(dir,False)
-    #refresh_collections_list()
 
 def cancel_callback(sender, app_data):
     print('Cancel was clicked.')
@@ -113,21 +127,21 @@ def update_table(w, h, table_matrix):
                         #print(column)
                         if column == 0:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 dpg.add_button(label= str(table_matrix[row][column]), width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif column == 1:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 dpg.add_button(label= str(table_matrix[row][column]), width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 2:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 duration_s = int(table_matrix[row][column])
@@ -137,14 +151,14 @@ def update_table(w, h, table_matrix):
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 3:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 dpg.add_button(label= str(table_matrix[row][column]), width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 4:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 rounded_bpm = round(table_matrix[row][column], 2)
@@ -152,7 +166,7 @@ def update_table(w, h, table_matrix):
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 5:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 rounded_loudness = round(table_matrix[row][column], 2)
@@ -160,14 +174,14 @@ def update_table(w, h, table_matrix):
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 6:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 dpg.add_button(label= str(table_matrix[row][column]), width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif column == 7:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 pertcentage = (table_matrix[row][column] * 100)
@@ -176,20 +190,16 @@ def update_table(w, h, table_matrix):
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         else:
                             if table_matrix[row][column] is None:
-                                dpg.add_button(label= "None", width=-1)
+                                dpg.add_button(label= "-", width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
                                 dpg.add_button(label= str(table_matrix[row][column]), width=-1)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
 
-            
-    #    for i in w:
-    #        for j in h:
-    #            dpg.add_table_column()
-    #            dpg.add_text(tracks_info[j][info_
+
 def init_collections_list():
     collections = collection_manager.get_collections()
-    dpg.add_listbox(tag="Collections", parent="Collections Window",items=(collections), width=-1, num_items=100, callback=get_selected_collection)
+    dpg.add_listbox(tag="Collections", parent="Collections Window",items=(collections), width=-1, num_items=(viewport_height/20)-1, callback=get_selected_collection)
     dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
 
     
@@ -219,8 +229,6 @@ def remove_callback():
     collection_manager.remove_collection(collection_info)
     collection_manager.remove_collection_relations(collection_info)
     refresh_collections_list()
-    collection_name = dpg.get_value("Collections")
-    get_collection_info(collection_name)
     refresh_info_pane("Done...") 
 
 def print_me():
@@ -237,7 +245,7 @@ def initialize_gui_elements():
                 dpg.add_menu_item(label="Collection from Folder", callback=lambda: dpg.show_item("file_dialog_id"))
             dpg.add_menu_item(label="Analyze", callback=analyze_callback)
             dpg.add_menu_item(label="Delete", callback=remove_callback)
-            dpg.add_menu_item(label="Settings", callback=print_me)
+            dpg.add_menu_item(label="Settings", callback=settings_window)
             dpg.add_menu_item(label="Exit", callback=dpg.stop_dearpygui)
         dpg.add_menu_item(label="Help", callback=print_me)
     # Add collection button
@@ -245,38 +253,39 @@ def initialize_gui_elements():
     directory_selector=True, show=False, callback=callback, tag="file_dialog_id",
     cancel_callback=cancel_callback, width=700 ,height=400)
     dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
-    with dpg.group(horizontal=True, tag="button_group"):
-        dpg.add_button(label='+',width=200, callback=lambda: dpg.show_item("file_dialog_id"))
-        dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
-        dpg.add_spacer(width = 156)
-        # Add image button
-        dpg.add_image_button("texture_tag", callback=print_me, tag="image_button_id")
+    
+    
+
     # Initialize group container for collections listbox and information pane
-    with dpg.group(horizontal=True):
-        with dpg.child_window(tag="Collections Window", border=False, height=viewport_height*0.85, width=400):
-            # Adding collection List
-            init_collections_list()
-        with dpg.child_window(width=-1, height=viewport_height*0.85, border=False):
-            with dpg.table(        
-                tag="Collections Info",  
-                borders_outerV=True,
-                borders_outerH=True,
-                borders_innerV=True,
-                borders_innerH=True,
-                scrollY=True,
-                freeze_rows=1,
-                height=-1,) as table:
-                # Add some columns to the table
-                for column in info_columns:
-                    dpg.add_table_column(label=column)
-                    dpg.bind_item_font(dpg.last_item(), "proggyvec")
-            default_selected = dpg.get_value("Collections")
-            get_collection_info(default_selected)
-        # Create the Table
-    with dpg.group():
-        with dpg.child_window(parent="Primary Window",tag="Info Pane Window", width=-1, no_scrollbar=True, height=viewport_height*0.020, border=False):
+    with dpg.group(tag="Main Ver"):
+        with dpg.group(horizontal=True, tag="button_group"):
+            dpg.add_button(label='+',width=200, callback=lambda: dpg.show_item("file_dialog_id"))
+            dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
+            dpg.add_spacer(width = 156)
+            # Add image button
+            dpg.add_image_button("texture_tag", callback=print_me, tag="image_button_id")
             refresh_info_pane("Ready...")
 
+        with dpg.group(horizontal=True):
+            with dpg.child_window(tag="Collections Window", border=False, width=400):
+                # Adding collection List
+                init_collections_list()
+            with dpg.child_window(width=-1, border=False):
+                with dpg.table(        
+                    tag="Collections Info",  
+                    borders_outerV=True,
+                    borders_outerH=True,
+                    borders_innerV=True,
+                    borders_innerH=True,
+                    scrollY=True,
+                    freeze_rows=1,
+                    height=-1,) as table:
+                    # Add some columns to the table
+                    for column in info_columns:
+                        dpg.add_table_column(label=column)
+                        dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                default_selected = dpg.get_value("Collections")
+                get_collection_info(default_selected)        
 
 
 dpg.create_context()
@@ -289,9 +298,17 @@ with dpg.texture_registry():
     dpg.add_static_texture(width=width, height=height, default_value=data, tag="texture_tag")
 
 
-with dpg.window(tag="Primary Window", height=-1,no_scrollbar=True):
+dpg.create_viewport(title='Deck|Track')
+viewport_width = dpg.get_viewport_client_width()
+viewport_height = dpg.get_viewport_client_height()
+
+
+with dpg.window(tag="Primary Window", height=viewport_height, no_scrollbar=True): 
     # Initialize Gui
     initialize_gui_elements()
+
+dpg.set_primary_window("Primary Window", True)
+
 
 image_button_pos = dpg.get_item_pos("image_button_id")
 
@@ -303,16 +320,19 @@ with dpg.popup("image_button_id", mousebutton=dpg.mvMouseButton_Left, tag="popta
     print(image_button_pos)
 dpg.configure_item(pop, min_size=[100,50])
 
-dpg.set_primary_window("Primary Window", True)
-dpg.create_viewport(title='Deck|Track')
-
-
-viewport_width = dpg.get_viewport_client_width()
-viewport_height = dpg.get_viewport_client_height()
-
 
 dpg.setup_dearpygui()
 dpg.maximize_viewport()
 dpg.show_viewport()
+
+
+while dpg.is_dearpygui_running():
+    sel_row = dpg.get_value("Collections")
+    dpg.render_dearpygui_frame()
+    new_row = dpg.get_value("Collections")
+    if new_row != sel_row:
+        get_collection_info(new_row)
+
+
 dpg.start_dearpygui()
 

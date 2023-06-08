@@ -13,7 +13,7 @@ class TrackAnalysis:
         # Calculate key profiles
         y_segment = waveform[tstart:tend]
         chromograph = librosa.feature.chroma_cqt(y=y_segment, sr=sr, bins_per_octave=24)
-# chroma_vals is the amount of each pitch class present in this time interval
+        # chroma_vals is the amount of each pitch class present in this time interval
         chroma_vals = []
         for i in range(12):
             chroma_vals.append(np.sum(chromograph[i]))
