@@ -1,4 +1,5 @@
 import os
+import re
 import music_tag
 from collection_manager import CollectionManager
 from collection import Collection
@@ -13,6 +14,17 @@ class CollectionCreator:
         collection_manager = CollectionManager()
         default_collection_type = "Playlist"
         collection_name = os.path.basename(loc)
+        # Fetch from the DB all the collections beginning with collection_name
+        lst = collection_manager.get_collections_starting_with(collection_name)
+        max_val = 0
+        for collection in lst:
+            # .* - (\d+)
+            result = re.match(f".* - (\d+)", collection[0])
+            if result:
+                max_val = max(max_val, int(result.group(1)))
+        if len(lst)>0:
+            collection_name = f"{collection_name} - {max_val+1}"
+        
         folder_collection = Collection(collection_name, default_collection_type)
         collection_manager.add_collection(folder_collection)    
 

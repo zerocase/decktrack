@@ -199,7 +199,7 @@ def update_table(w, h, table_matrix):
 
 def init_collections_list():
     collections = collection_manager.get_collections()
-    dpg.add_listbox(tag="Collections", parent="Collections Window",items=(collections), width=-1, num_items=(viewport_height/20)-1, callback=get_selected_collection)
+    dpg.add_listbox(tag="Collections", parent="Collections Window",items=[c[1] for c in collections], width=-1, num_items=(viewport_height/20)-1, callback=get_selected_collection)
     dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
 
     

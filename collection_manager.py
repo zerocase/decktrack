@@ -1,3 +1,4 @@
+from typing import Tuple, List
 import sqlite3
 import db
 from collection import Collection
@@ -55,10 +56,11 @@ class CollectionManager:
                   (collection.collection_id, track.track_id))
         db.conn.commit()
     
-    def get_collections(self):
+    def get_collections(self) -> List[Tuple[int, str]]:
+        """ Get a list of tuples (id, name) representing collections"""
         c = db.conn.cursor()
-        names = [name[0] for name in c.execute("SELECT name FROM collections")]
-        return names
+        result = [(item[0], item[1]) for item in c.execute("SELECT collection_id, name FROM collections")]
+        return result
     
     def get_tracks_by_collection_name(self, name):
         c = db.conn.cursor()
@@ -68,6 +70,12 @@ class CollectionManager:
                     INNER JOIN
                     collections c on c.collection_id = r.collection_id
                     WHERE name = ?''', (name,))
+        rows = c.fetchall()
+        return rows
+
+    def get_collections_starting_with(self, name):
+        c = db.conn.cursor()
+        c.execute('''SELECT name from collections WHERE name LIKE ?''', (name + '%',))
         rows = c.fetchall()
         return rows
 
