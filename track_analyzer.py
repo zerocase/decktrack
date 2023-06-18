@@ -45,7 +45,7 @@ class TrackAnalysis:
         # this attribute represents the key determined by the algorithm
         key = max(key_dict, key=key_dict.get)
         bestcorr = max(key_dict.values())
-        print(key)
+        #print(key)
         return key
     
     

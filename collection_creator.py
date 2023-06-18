@@ -6,12 +6,16 @@ from collection import Collection
 from track_manager import TrackManager
 from track import Track
 from track_analyzer import TrackAnalysis
+from gui_relay import InfoPane
+
+track_manager = TrackManager()  
+collection_manager = CollectionManager()
+
+
 
 class CollectionCreator:
 
     def collection_from_folder(self, loc, analyze):
-        track_manager = TrackManager()
-        collection_manager = CollectionManager()
         default_collection_type = "Playlist"
         collection_name = os.path.basename(loc)
         # Fetch from the DB all the collections beginning with collection_name
@@ -40,12 +44,14 @@ class CollectionCreator:
                 track_manager.add_track(track)
                 collection_manager.add_track_to_collection(folder_collection, track)
     
-    def analyze_tracks(self, tracks_info):
-        track_manager = TrackManager()
-        collection_manager = CollectionManager()
-        #print(tracks_info)
+    def analyze_tracks(self, tracks_info, collection_name):
+        numtracks = len(tracks_info)
+        track_num = 0
         for track in tracks_info:
-            track_data = track_manager.get_track_by_title_artist(track[0], track[1])   
+            track_num +=1
+            track_data = track_manager.get_track_by_title_artist(track[0], track[1])
+            currinfo = f"Analyzing... ({track_num}/{numtracks}) | Collection: {collection_name} | Track: {track[0]}"
+            InfoPane.refresh_info_pane(currinfo)
             #print(track_data)
             #print(track_data[0])
             analysis_data = TrackAnalysis.analyze_track(track_data[10])
