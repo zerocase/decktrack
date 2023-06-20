@@ -5,6 +5,13 @@ db_file ="data/decktrack.db"
 conn = sqlite3.connect(db_file, check_same_thread=False) 
 
 
+def check_db_exists():
+    try:
+        conn.execute("SELECT * FROM relations")
+    except:
+        return False
+    return True
+
 def create_collections_table():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS collections

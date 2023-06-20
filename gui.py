@@ -5,6 +5,7 @@ from collection_creator import CollectionCreator
 from track import Track
 from collection import Collection
 import db
+import link_importer
 from gui_relay import InfoPane
 track_manager = TrackManager()  
 collection_manager = CollectionManager()
@@ -13,6 +14,13 @@ collection_creator = CollectionCreator()
 
 list_items= 55
 info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Danceability", "Energy", "Quality"]
+
+def link_callback(sender):
+    dpg.delete_item("link_box")
+    link = dpg.get_value("input_text")
+    print(link)
+    #link_importer.prompter(link)
+
 
 def sort_callback(sender, sort_specs):
 
@@ -61,7 +69,7 @@ def settings_window(sender):
         viewport_height = dpg.get_viewport_client_height()
 
         
-        with dpg.window(label="Settings", show=True, tag="settings_id", no_title_bar=True, width=400, height=800) as settings_id:
+        with dpg.window(label="Settings", show=True, tag="settings_id", width=400, height=800) as settings_id:
             dpg.add_text("Settings")
             dpg.add_separator()
             dpg.add_checkbox(label="Don't ask me next time")
@@ -73,6 +81,27 @@ def settings_window(sender):
     width = dpg.get_item_width(settings_id)
     height = dpg.get_item_height(settings_id)
     dpg.set_item_pos(settings_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])   
+
+def collection_from_link(sender):
+    with dpg.mutex():
+
+        viewport_width = dpg.get_viewport_client_width()
+        viewport_height = dpg.get_viewport_client_height()
+
+        
+        with dpg.window(label="Insert Link", show=True, tag="link_box", width=400, height=200) as link_box:
+            dpg.add_text("Insert your link:")
+            dpg.add_separator()
+            dpg.add_input_text(tag="input_text")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Yes", width=75, callback=link_callback)
+                dpg.add_button(label="No", width=75, callback= lambda: dpg.delete_item(link_box) )
+    
+    dpg.split_frame()
+    width = dpg.get_item_width(link_box)
+    height = dpg.get_item_height(link_box)
+    dpg.set_item_pos(link_box, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])   
+
 
 
 def get_selected_collection(sender, collection_name):
@@ -159,17 +188,17 @@ def update_table(w, h, table_matrix):
                         #print(column)
                         if column == 0:
                             if table_matrix[row][column] is None:
-                                dpg.add_selectable(label=" - ", span_columns=True)
+                                dpg.add_selectable(label=" - ", span_columns=True, height=20)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif column == 1:
                             if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
+                                dpg.add_selectable(label="-", span_columns=True, height=20)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                             else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
                                 dpg.bind_item_font(dpg.last_item(), "proggyvec")
                         elif  column == 2:
                             if table_matrix[row][column] is None:
@@ -274,6 +303,7 @@ def initialize_gui_elements():
         with dpg.menu(label="File"):
             with dpg.menu(label="New"):
                 dpg.add_menu_item(label="Collection from Folder", callback=lambda: dpg.show_item("file_dialog_id"))
+                dpg.add_menu_item(label="Collection from Link", callback=collection_from_link)
             dpg.add_menu_item(label="Analyze", callback=analyze_callback)
             dpg.add_menu_item(label="Delete", callback=remove_callback)
             dpg.add_menu_item(label="Settings", callback=settings_window)
