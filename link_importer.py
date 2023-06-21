@@ -17,7 +17,7 @@ def prompter(playlist_link):
     if "spotify" in playlist_link:
         source = "spotify"
         playlist = sp.playlist(playlist_link)
-        print(playlist)
+        #print(playlist)
         spotify_extractor(playlist, playlist_link)
     elif "deezer" in playlist_link:
         print("This feature is yet to be implemented")
@@ -41,8 +41,9 @@ def prompter(playlist_link):
 #        return "No information on the Spotify database."
 
 
-def spotify_extractor(playlist,remote_link):
-    trackinfo = {        
+def spotify_extractor(playlist, remote_link):
+    trackinfo = {
+        "id" : "",
         "title" : "",
         "artist" : "",
         "duration" : 0,
@@ -54,11 +55,12 @@ def spotify_extractor(playlist,remote_link):
     }
     allinfo = []
     for item in playlist['tracks']['items']:
-        trackinfo["title"] = item
+        trackinfo["id"] = item['track']['id']
+        trackinfo["title"] = item['track']['name']
         for artist in item['track']['artists']:
             trackinfo['artist'] = artist['name']
         summary = sp.audio_features(trackinfo["id"])[0]
-        trackinfo["duration"] = summary['duration_ms']
+        trackinfo["duration"] = summary['duration_ms'] /1000
         trackinfo["key"] = summary['key']
         trackinfo["bpm"] = summary['tempo']
         trackinfo["loudness"] = summary['loudness']
@@ -83,10 +85,10 @@ def spotify_importer(allinfo, name, remote_link):
     spotify_collection = Collection(collection_name, default_collection_type)
     collection_manager.add_collection(spotify_collection)
     for track in allinfo:
-        track_features = sp.audio_features(track["id"])[0]
-        track = Track(str(track['track']['name']), str(track['track']['artists']), float(track_features['duration_ms']), str(track_features['key'] ), float(track_features['tempo']), float(track_features['loudness']), float(track_features['danceability']), float(track_features['energy']), None, remote_link)
-        track_manager.add_track(track)
-        collection_manager.add_track_to_collection(spotify_collection, track)
+        print(track)
+        track_inf = Track(str(track['title']), str(track['artist']), float(track['duration']), str(track['key'] ), float(track['bpm']), float(track['loudness']), float(track['danceability']), float(track['energy']), None, remote_link)
+        track_manager.add_track(track_inf)
+        collection_manager.add_track_to_collection(spotify_collection, track_inf)
 
 
-prompter("https://open.spotify.com/playlist/1kLEp5h2z4u3rVk3TpgTrd?si=a032b4d717ee4308")
+#prompter("https://open.spotify.com/playlist/3c9cD2tAG2jRyk5QNWxyJH?si=ffb9469e7b934a8d")

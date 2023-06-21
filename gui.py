@@ -16,10 +16,11 @@ list_items= 55
 info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Danceability", "Energy", "Quality"]
 
 def link_callback(sender):
-    dpg.delete_item("link_box")
     link = dpg.get_value("input_text")
-    print(link)
-    #link_importer.prompter(link)
+    dpg.delete_item("link_box")
+    #print(link)
+    link_importer.prompter(link)
+    refresh_collections_list()
 
 
 def sort_callback(sender, sort_specs):
@@ -89,13 +90,13 @@ def collection_from_link(sender):
         viewport_height = dpg.get_viewport_client_height()
 
         
-        with dpg.window(label="Insert Link", show=True, tag="link_box", width=400, height=200) as link_box:
+        with dpg.window(label="Insert Link", show=True, tag="link_box", width=600, height=120) as link_box:
             dpg.add_text("Insert your link:")
             dpg.add_separator()
-            dpg.add_input_text(tag="input_text")
+            dpg.add_input_text(tag="input_text", width=-1)
             with dpg.group(horizontal=True):
-                dpg.add_button(label="Yes", width=75, callback=link_callback)
-                dpg.add_button(label="No", width=75, callback= lambda: dpg.delete_item(link_box) )
+                dpg.add_button(label="Add", width=75, callback=link_callback)
+                dpg.add_button(label="Cancel", width=75, callback= lambda: dpg.delete_item(link_box) )
     
     dpg.split_frame()
     width = dpg.get_item_width(link_box)
