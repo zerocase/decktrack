@@ -133,3 +133,4 @@ data/*
 
 #Local Environment
 denv/*
+dtconfig.ini

@@ -7,6 +7,7 @@ from track_manager import TrackManager
 from track import Track
 from track_analyzer import TrackAnalysis
 from gui_relay import InfoPane
+import SongNameSplit
 
 track_manager = TrackManager()  
 collection_manager = CollectionManager()
@@ -14,6 +15,19 @@ collection_manager = CollectionManager()
 
 
 class CollectionCreator:
+    def get_all_folders(self, input_dir):
+        paths_all = []
+        collection_paths =[]
+        if not os.path.exists(input_dir):
+            raise FileNotFoundError("Could not find path: %s"%(input_dir))
+        for dirpath, dirnames, filenames in os.walk(input_dir):
+            paths_all.append(dirpath)
+        for path in paths_all:
+            if any(File.endswith(".flac") or File.endswith(".wav") or File.endswith(".mp3") for File in os.listdir(path)):
+                collection_paths.append(path)
+        #print(collection_paths)
+        return collection_paths
+
 
     def collection_from_folder(self, loc, analyze):
         default_collection_type = "Playlist"
@@ -30,11 +44,23 @@ class CollectionCreator:
             collection_name = f"{collection_name} - {max_val+1}"
         
         folder_collection = Collection(collection_name, default_collection_type)
-        collection_manager.add_collection(folder_collection)    
+        collection_manager.add_collection(folder_collection)
 
         for file in os.listdir(loc):
             if file.endswith(".flac") or file.endswith(".wav") or file.endswith(".mp3"):
                 track_data = music_tag.load_file(os.path.join(loc,file))
+                if not track_data['title']:
+                    try:
+                        title = os.path.splitext("".join(file.split(" - ")[1:]))[0]
+                        track_data['title'] = title
+                    except:
+                        track_data['title'] = file
+                if not track_data['artist']:
+                    try:
+                        artist = file.split(" - ")[0]
+                        track_data['artist'] = artist
+                    except:
+                        track_data['artist'] = 'Unknown'
                 if analyze == True:
                     analysis_data = TrackAnalysis.analyze_track(os.path.join(loc,file))
                     track = Track(str(track_data['title']), str(track_data['artist']), float(analysis_data[0]), str(analysis_data[1]), float(analysis_data[2]), float(analysis_data[3]), float(analysis_data[4]), float(analysis_data[5]), int(track_data['#bitrate'])/1000, os.path.join(loc,file))
@@ -43,6 +69,9 @@ class CollectionCreator:
                     track = Track(str(track_data['title']), str(track_data['artist']),None, None, None, None, None, None, int(track_data['#bitrate'])/1000, os.path.join(loc,file))                    
                 track_manager.add_track(track)
                 collection_manager.add_track_to_collection(folder_collection, track)
+            #else:
+            #    raise ValueError("Could not find any audio files in the folder: %s"%(loc))
+
     
     def analyze_tracks(self, tracks_info, collection_name):
         numtracks = len(tracks_info)

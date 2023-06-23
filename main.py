@@ -5,7 +5,21 @@ from track import Track
 from collection import Collection
 import db
 import time
+import os
+from configparser import ConfigParser
+import config_writer
 
+config = ConfigParser()
+config.read("dtconfig.ini")
+
+if not os.path.exists("dtconfig.ini"):
+        config_writer.create_default_config()
+
+def set_spotify_cred():
+    os.environ["SPOTIPY_CLIENT_ID"] = config["DEFAULT"]["Spotify Client ID"]
+    os.environ["SPOTIPY_CLIENT_SECRET"] = config["DEFAULT"]["Spotify Client Secret"]
+
+set_spotify_cred()
 
 if __name__ == '__main__':
     #start_time = time.time()

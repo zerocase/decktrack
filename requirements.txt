@@ -2,3 +2,4 @@ music_tag
 librosa
 dearpygui
 spotipy
+SongNameSplit

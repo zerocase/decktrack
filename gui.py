@@ -5,15 +5,53 @@ from collection_creator import CollectionCreator
 from track import Track
 from collection import Collection
 import db
+import os
 import link_importer
 from gui_relay import InfoPane
 track_manager = TrackManager()  
 collection_manager = CollectionManager()
 collection_creator = CollectionCreator()
+from configparser import ConfigParser
+import config_writer
+from threading import Thread
 
+config = ConfigParser()
+config.read("dtconfig.ini")
+
+music_directory = config["DEFAULT"]["Music Library"]
+spotify_client_id = config["DEFAULT"]["Spotify Client ID"]
+spotify_client_secret = config["DEFAULT"]["Spotify Client Secret"]
 
 list_items= 55
 info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Danceability", "Energy", "Quality"]
+
+def threadedscan():
+    dir_location = str(dpg.get_value("dir_location"))
+    dirs = collection_creator.get_all_folders(dir_location)
+    dirnum = 0
+    for dir in dirs:
+        dirnum += 1
+        print("Scanning..." + dir + " " + str(dirnum) + "/" + str(len(dirs)))
+        collection_creator.collection_from_folder(dir,False)
+        refresh_collections_list()
+
+thscan = Thread(target=threadedscan)
+
+
+def scan_all_folders(sender):
+    thscan.start()
+
+
+
+
+def modify_setting(sender):
+    new_music_directory = dpg.get_value("dir_location")
+    new_spotify_client_id = dpg.get_value("sp_client_id")
+    new_spotify_client_secret = dpg.get_value("sp_client_secret")
+    config_writer.modify_config("Music Library", new_music_directory)
+    config_writer.modify_config("Spotify Client ID", new_spotify_client_id)
+    config_writer.modify_config("Spotify Client Secret", new_spotify_client_secret)
+    print("Config file modified.")
 
 def link_callback(sender):
     link = dpg.get_value("input_text")
@@ -70,13 +108,25 @@ def settings_window(sender):
         viewport_height = dpg.get_viewport_client_height()
 
         
-        with dpg.window(label="Settings", show=True, tag="settings_id", width=400, height=800) as settings_id:
+        with dpg.window(label="Settings", show=True, tag="settings_id", modal=True, no_title_bar=True, width=400, height=350, no_resize=True) as settings_id:
             dpg.add_text("Settings")
+            dpg.bind_item_font(dpg.last_item(), "roboto-condensed-36")
+            dpg.add_spacer()
+            dpg.add_text("Music Directory")
+            with dpg.group(horizontal=True) as group:
+                dpg.add_input_text(default_value=music_directory, tag="dir_location")
+                dpg.add_button(label="Browse")
+            dpg.add_button(label="Scan Folders", callback=scan_all_folders)
             dpg.add_separator()
-            dpg.add_checkbox(label="Don't ask me next time")
+            dpg.add_spacer()
+            dpg.add_text("Spotify Client ID")
+            dpg.add_input_text(default_value=spotify_client_id, tag="sp_client_id")
+            dpg.add_text("Spotify Client Secret")
+            dpg.add_input_text(default_value=spotify_client_secret, password=True, tag="sp_client_secret")
+            dpg.add_spacer()
             with dpg.group(horizontal=True):
                 dpg.add_button(label="Close", width=75, callback= lambda: dpg.delete_item(settings_id) )
-                dpg.add_button(label="Save", width=75)
+                dpg.add_button(label="Save", width=75, callback=modify_setting)
     
     dpg.split_frame()
     width = dpg.get_item_width(settings_id)
@@ -134,7 +184,7 @@ def prompt_callback(sender, dir, analyze):
     else:
         InfoPane.refresh_info_pane("Scanning..." + " " + dir)
         collection_creator.collection_from_folder(dir,False)
-    print(dir, analyze)
+    #print(dir, analyze)
     sel_row = dpg.get_value("Collections")
     get_collection_info(sel_row)
     refresh_collections_list()
@@ -190,79 +240,79 @@ def update_table(w, h, table_matrix):
                         if column == 0:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label=" - ", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif column == 1:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif  column == 2:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 duration_s = int(table_matrix[row][column])
                                 duration_m = duration_s // 60
                                 duration_s = duration_s % 60
                                 dpg.add_selectable(label=str(duration_m) + "m " + str(duration_s) + "s", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif  column == 3:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif  column == 4:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 rounded_bpm = round(table_matrix[row][column], 2)
                                 dpg.add_selectable(label=str(rounded_bpm), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif  column == 5:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 rounded_loudness = round(table_matrix[row][column], 2)
                                 dpg.add_selectable(label=str(rounded_loudness), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif  column == 6:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         elif column == 7:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 pertcentage = (table_matrix[row][column] * 100)
                                 intified = int(pertcentage)
                                 dpg.add_selectable(label=str(intified), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                         else:
                             if table_matrix[row][column] is None:
                                 dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                             else:
                                 dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
 
 
 def init_collections_list():
     collections = collection_manager.get_collections()
     dpg.add_listbox(tag="Collections", parent="Collections Window",items=[c[1] for c in collections], width=-1, num_items=(viewport_height/20)-1, callback=get_selected_collection)
-    dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
+    dpg.bind_item_font(dpg.last_item(), "roboto-condensed-22")
 
     
 def refresh_collections_list():
@@ -297,24 +347,26 @@ def print_me():
 
 def initialize_gui_elements():
     with dpg.font_registry():
-        robotofont = dpg.add_font("RobotoCondensed-Regular.ttf", 20, tag="roboto-condensed")
-        progggyvec = dpg.add_font("ProggyVector Regular.otf", 16, tag="proggyvec")
+        dpg.add_font("fonts\RobotoCondensed-Regular.ttf", 22, tag="roboto-condensed-22")
+        dpg.add_font("fonts\ProggyVector Regular.otf", 18, tag="proggyvec-18")
+        dpg.add_font("fonts\RobotoCondensed-Bold.ttf", 36, tag="roboto-condensed-36")
     #Initialize Menu
     with dpg.menu_bar():
         with dpg.menu(label="File"):
             with dpg.menu(label="New"):
                 dpg.add_menu_item(label="Collection from Folder", callback=lambda: dpg.show_item("file_dialog_id"))
                 dpg.add_menu_item(label="Collection from Link", callback=collection_from_link)
-            dpg.add_menu_item(label="Analyze", callback=analyze_callback)
-            dpg.add_menu_item(label="Delete", callback=remove_callback)
             dpg.add_menu_item(label="Settings", callback=settings_window)
             dpg.add_menu_item(label="Exit", callback=dpg.stop_dearpygui)
+        with dpg.menu(label="Collection"):
+            dpg.add_menu_item(label="Analyze", callback=analyze_callback)
+            dpg.add_menu_item(label="Delete", callback=remove_callback)
         dpg.add_menu_item(label="Help", callback=print_me)
     # Add collection button
     dpg.add_file_dialog(
     directory_selector=True, show=False, callback=callback, tag="file_dialog_id",
     cancel_callback=cancel_callback, width=700 ,height=400)
-    dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
+    dpg.bind_item_font(dpg.last_item(), "roboto-condensed-22")
     
     
 
@@ -322,14 +374,14 @@ def initialize_gui_elements():
     with dpg.group(tag="Main Ver"):
         with dpg.group(horizontal=True, tag="button_group"):
             dpg.add_button(label='+',width=200, callback=lambda: dpg.show_item("file_dialog_id"))
-            dpg.bind_item_font(dpg.last_item(), "roboto-condensed")
+            dpg.bind_item_font(dpg.last_item(), "roboto-condensed-22")
             dpg.add_spacer(width = 156)
             # Add image button
             dpg.add_image_button("texture_tag", callback=print_me, tag="image_button_id")
             InfoPane.refresh_info_pane("Ready...")
 
         with dpg.group(horizontal=True):
-            with dpg.child_window(tag="Collections Window", border=False, width=400):
+            with dpg.child_window(tag="Collections Window", border=False, width=400, no_scrollbar=True):
                 # Adding collection List
                 init_collections_list()
             with dpg.child_window(width=-1, border=False):
@@ -348,7 +400,7 @@ def initialize_gui_elements():
                     # Add some columns to the table
                     for column in info_columns:
                         dpg.add_table_column(label=column, width_stretch=True)
-                        dpg.bind_item_font(dpg.last_item(), "proggyvec")
+                        dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
                 default_selected = dpg.get_value("Collections")
                 get_collection_info(default_selected)        
 
