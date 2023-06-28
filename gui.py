@@ -347,9 +347,9 @@ def print_me():
 
 def initialize_gui_elements():
     with dpg.font_registry():
-        dpg.add_font("fonts\RobotoCondensed-Regular.ttf", 22, tag="roboto-condensed-22")
-        dpg.add_font("fonts\ProggyVector Regular.otf", 18, tag="proggyvec-18")
-        dpg.add_font("fonts\RobotoCondensed-Bold.ttf", 36, tag="roboto-condensed-36")
+        dpg.add_font("res\\fonts\RobotoCondensed-Regular.ttf", 22, tag="roboto-condensed-22")
+        dpg.add_font("res\\fonts\ProggyVector Regular.otf", 18, tag="proggyvec-18")
+        dpg.add_font("res\\fonts\RobotoCondensed-Bold.ttf", 36, tag="roboto-condensed-36")
     #Initialize Menu
     with dpg.menu_bar():
         with dpg.menu(label="File"):
@@ -409,7 +409,7 @@ dpg.create_context()
 
 #dpg.show_font_manager()
 
-width, height, channels, data = dpg.load_image("threedots.png")
+width, height, channels, data = dpg.load_image("res\\images\\threedots.png")
 
 with dpg.texture_registry():
     dpg.add_static_texture(width=width, height=height, default_value=data, tag="texture_tag")
