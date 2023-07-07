@@ -36,11 +36,7 @@ class TrackManager:
         FROM tracks
         WHERE title=? and artist=?
         """, (title, artist))
-        row = c.fetchone()
-        if row:
-            return row
-        else:
-            return None
+        return row if (row := c.fetchone()) else None
 
     def get_track_by_id(self, id):
         c = db.conn.cursor()
@@ -49,11 +45,7 @@ class TrackManager:
         FROM tracks
         WHERE id=?
         """, (id,))
-        row = c.fetchone()
-        if row:
-            return Track(*row)
-        else:
-            return None
+        return Track(*row) if (row := c.fetchone()) else None
 
     def get_all_tracks(self):
         c = db.conn.cursor()
@@ -105,8 +97,4 @@ class TrackManager:
         FROM tracks
         WHERE track_id=?
         """, (track.track_id,))
-        row = c.fetchone()
-        if row:
-            return row[0]
-        else:
-            return None
+        return row[0] if (row := c.fetchone()) else None

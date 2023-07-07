@@ -16,17 +16,19 @@ collection_manager = CollectionManager()
 
 class CollectionCreator:
     def get_all_folders(self, input_dir):
-        paths_all = []
-        collection_paths =[]
         if not os.path.exists(input_dir):
-            raise FileNotFoundError("Could not find path: %s"%(input_dir))
-        for dirpath, dirnames, filenames in os.walk(input_dir):
-            paths_all.append(dirpath)
-        for path in paths_all:
-            if any(File.endswith(".flac") or File.endswith(".wav") or File.endswith(".mp3") for File in os.listdir(path)):
-                collection_paths.append(path)
-        #print(collection_paths)
-        return collection_paths
+            raise FileNotFoundError(f"Could not find path: {input_dir}")
+        paths_all = [dirpath for dirpath, dirnames, filenames in os.walk(input_dir)]
+        return [
+            path
+            for path in paths_all
+            if any(
+                File.endswith(".flac")
+                or File.endswith(".wav")
+                or File.endswith(".mp3")
+                for File in os.listdir(path)
+            )
+        ]
 
 
     def collection_from_folder(self, loc, analyze):
@@ -36,13 +38,11 @@ class CollectionCreator:
         lst = collection_manager.get_collections_starting_with(collection_name)
         max_val = 0
         for collection in lst:
-            # .* - (\d+)
-            result = re.match(f".* - (\d+)", collection[0])
-            if result:
-                max_val = max(max_val, int(result.group(1)))
+            if result := re.match(f".* - (\d+)", collection[0]):
+                max_val = max(max_val, int(result[1]))
         if len(lst)>0:
             collection_name = f"{collection_name} - {max_val+1}"
-        
+
         folder_collection = Collection(collection_name, default_collection_type)
         collection_manager.add_collection(folder_collection)
 
@@ -75,9 +75,7 @@ class CollectionCreator:
     
     def analyze_tracks(self, tracks_info, collection_name):
         numtracks = len(tracks_info)
-        track_num = 0
-        for track in tracks_info:
-            track_num +=1
+        for track_num, track in enumerate(tracks_info, start=1):
             track_data = track_manager.get_track_by_title_artist(track[0], track[1])
             currinfo = f"Analyzing... ({track_num}/{numtracks}) | Collection: {collection_name} | Track: {track[0]}"
             InfoPane.refresh_info_pane(currinfo)

@@ -49,17 +49,17 @@ class TrackAnalysis:
         return key
     
     
-    def dfa(y, minTau=10, maxTau=100):
+    def dfa(self, minTau=10, maxTau=100):
         # Convert audio to mono if it is stereo
-        if y.ndim > 1:
-            y = librosa.core.to_mono(y)
-    
+        if self.ndim > 1:
+            self = librosa.core.to_mono(self)
+
         # Calculate the cumulative sum of the audio signal
-        cumsum = np.cumsum(y - np.mean(y))
-    
+        cumsum = np.cumsum(self - np.mean(self))
+
         # Calculate the range of tau values
         tau = 2 ** np.arange(np.floor(np.log2(minTau)), np.ceil(np.log2(maxTau)))
-    
+
         # Calculate the fluctuation for each tau value
         fluctuation = np.zeros(len(tau))
         for i, t in enumerate(tau):
@@ -67,19 +67,19 @@ class TrackAnalysis:
             local_trend = np.mean(segments, axis=1, keepdims=True)
             segments -= local_trend
             fluctuation[i] = np.sqrt(np.mean(segments ** 2))
-    
+
         # Fit a line to the log-log plot of tau vs fluctuation
         poly = np.polyfit(np.log2(tau), np.log2(fluctuation), 1)
-    
+
         # Return the DFA exponent as a measure of danceability
         return poly[0]
 
 
 
 
-    def analyze_track(audio_file_path):
+    def analyze_track(self):
         # Load Track on Mono
-        y, sr = librosa.load(audio_file_path)
+        y, sr = librosa.load(self)
 
         # Compute BPM
         bpm, beats = librosa.beat.beat_track(y=y, sr=sr, units='time', trim=False, hop_length=256)
@@ -99,9 +99,14 @@ class TrackAnalysis:
         # Compute Danceability
         danceability = TrackAnalysis.dfa(y)
 
-        analysis_data = [round(duration, 2), key, round(bpm, 2), round(loudness.mean(), 2), danceability, round(energy.mean(), 2)]
-
-        return analysis_data
+        return [
+            round(duration, 2),
+            key,
+            round(bpm, 2),
+            round(loudness.mean(), 2),
+            danceability,
+            round(energy.mean(), 2),
+        ]
 
 #tdir = "E://MusicLibrary//Nicotine//Kurnugû - Third Foundation//[NONE] Ikiryō - At Dawn (2021)//01. Ikiryō - At Dawn.flac"
 #print(TrackAnalysis.analyze_track(tdir))

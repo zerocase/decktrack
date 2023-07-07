@@ -19,9 +19,7 @@ def prompter(playlist_link):
         playlist = sp.playlist(playlist_link)
         #print(playlist)
         spotify_extractor(playlist, playlist_link)
-    elif "deezer" in playlist_link:
-        print("This feature is yet to be implemented")
-    elif "music.youtube" in playlist_link:
+    elif "deezer" in playlist_link or "music.youtube" in playlist_link:
         print("This feature is yet to be implemented")
     else:
         print("This does not seem to be a valid link!")
@@ -75,13 +73,11 @@ def spotify_importer(allinfo, name, remote_link):
     lst = collection_manager.get_collections_starting_with(collection_name)
     max_val = 0
     for collection in lst:
-        # .* - (\d+)
-        result = re.match(f".* - (\d+)", collection[0])
-        if result:
-            max_val = max(max_val, int(result.group(1)))
+        if result := re.match(f".* - (\d+)", collection[0]):
+            max_val = max(max_val, int(result[1]))
     if len(lst)>0:
         collection_name = f"{collection_name} - {max_val+1}"
-        
+
     spotify_collection = Collection(collection_name, default_collection_type)
     collection_manager.add_collection(spotify_collection)
     for track in allinfo:
