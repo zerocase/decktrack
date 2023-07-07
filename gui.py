@@ -28,10 +28,8 @@ info_columns = ["Title", "Artist", "Duration", "Key", "BPM", "Loudness", "Dancea
 def threadedscan():
     dir_location = str(dpg.get_value("dir_location"))
     dirs = collection_creator.get_all_folders(dir_location)
-    dirnum = 0
-    for dir in dirs:
-        dirnum += 1
-        print("Scanning..." + dir + " " + str(dirnum) + "/" + str(len(dirs)))
+    for dirnum, dir in enumerate(dirs, start=1):
+        print(f"Scanning...{dir} {str(dirnum)}/{len(dirs)}")
         collection_creator.collection_from_folder(dir,False)
         refresh_collections_list()
 
@@ -162,7 +160,7 @@ def get_selected_collection(sender, collection_name):
 def create_matrix(tracks_info):
     w = len(info_columns)
     h = len(tracks_info)
-    table_matrix = [[0 for x in range(w)] for y in range(h)]
+    table_matrix = [[0 for _ in range(w)] for _ in range(h)]
     return table_matrix, w, h
 
 
@@ -230,83 +228,58 @@ def cancel_callback(sender, app_data):
 
 
 def update_table(w, h, table_matrix):
-            for column in info_columns:
-                dpg.add_table_column(label=column, parent="Collections Info", width_stretch=True)
-            for row in range(h):
-                with dpg.table_row(parent="Collections Info"):
-                    for column in range(w):
+    for column in info_columns:
+        dpg.add_table_column(label=column, parent="Collections Info", width_stretch=True)
+    for row in range(h):
+        with dpg.table_row(parent="Collections Info"):
+            for column in range(w):
                         #print(row, column)
                         #print(column)
-                        if column == 0:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label=" - ", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif column == 1:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 2:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                duration_s = int(table_matrix[row][column])
-                                duration_m = duration_s // 60
-                                duration_s = duration_s % 60
-                                dpg.add_selectable(label=str(duration_m) + "m " + str(duration_s) + "s", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 3:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 4:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                rounded_bpm = round(table_matrix[row][column], 2)
-                                dpg.add_selectable(label=str(rounded_bpm), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 5:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                rounded_loudness = round(table_matrix[row][column], 2)
-                                dpg.add_selectable(label=str(rounded_loudness), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 6:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif column == 7:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                pertcentage = (table_matrix[row][column] * 100)
-                                intified = int(pertcentage)
-                                dpg.add_selectable(label=str(intified), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        else:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                if column == 0:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label=" - ", span_columns=True, height=20)
+                    else:
+                        dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
+                elif column == 1:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label="-", span_columns=True, height=20)
+                    else:
+                        dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
+                elif column == 2:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label="-", span_columns=True)
+                    else:
+                        duration_s = int(table_matrix[row][column])
+                        duration_m = duration_s // 60
+                        duration_s %= 60
+                        dpg.add_selectable(
+                            label=f"{str(duration_m)}m {duration_s}s",
+                            span_columns=True,
+                        )
+                elif column == 4:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label="-", span_columns=True)
+                    else:
+                        rounded_bpm = round(table_matrix[row][column], 2)
+                        dpg.add_selectable(label=str(rounded_bpm), span_columns=True)
+                elif column == 5:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label="-", span_columns=True)
+                    else:
+                        rounded_loudness = round(table_matrix[row][column], 2)
+                        dpg.add_selectable(label=str(rounded_loudness), span_columns=True)
+                elif column == 7:
+                    if table_matrix[row][column] is None:
+                        dpg.add_selectable(label="-", span_columns=True)
+                    else:
+                        pertcentage = (table_matrix[row][column] * 100)
+                        dpg.add_selectable(label=str(int(pertcentage)), span_columns=True)
+                elif table_matrix[row][column] is None:
+                    dpg.add_selectable(label="-", span_columns=True)
+                else:
+                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+
+                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
 
 
 def init_collections_list():

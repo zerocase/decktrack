@@ -23,12 +23,7 @@ class CollectionManager:
         c = db.conn.cursor()
         c.execute("""SELECT collection_id, name, collection_type
                      FROM collections WHERE name =?""", (collection_name,))
-        row = c.fetchone()
-        #print(row)
-        if row:
-            return row
-        else:
-            return None
+        return row if (row := c.fetchone()) else None
 
     def remove_collection(self, collection_info):
         c = db.conn.cursor()
@@ -38,11 +33,7 @@ class CollectionManager:
     def get_track_id_from_collection(self, collection_info):
         c = db.conn.cursor()
         c.execute("SELECT track_id FROM relations WHERE collection_id=?", (collection_info[0],))
-        rows = c.fetchall()
-        if rows:
-            return rows
-        else:
-            return None
+        return rows if (rows := c.fetchall()) else None
        
 
     def remove_collection_relations(self, collection_info):
@@ -59,8 +50,10 @@ class CollectionManager:
     def get_collections(self) -> List[Tuple[int, str]]:
         """ Get a list of tuples (id, name) representing collections"""
         c = db.conn.cursor()
-        result = [(item[0], item[1]) for item in c.execute("SELECT collection_id, name FROM collections")]
-        return result
+        return [
+            (item[0], item[1])
+            for item in c.execute("SELECT collection_id, name FROM collections")
+        ]
     
     def get_tracks_by_collection_name(self, name):
         c = db.conn.cursor()
@@ -70,31 +63,27 @@ class CollectionManager:
                     INNER JOIN
                     collections c on c.collection_id = r.collection_id
                     WHERE name = ?''', (name,))
-        rows = c.fetchall()
-        return rows
+        return c.fetchall()
 
     def get_collections_starting_with(self, name):
         c = db.conn.cursor()
-        c.execute('''SELECT name from collections WHERE name LIKE ?''', (name + '%',))
-        rows = c.fetchall()
-        return rows
+        c.execute('''SELECT name from collections WHERE name LIKE ?''', (f'{name}%', ))
+        return c.fetchall()
 
     def get_track_ids_by_collection_id(self, collection_id):
         c = db.conn.cursor()
         c.execute('''SELECT track_id from relations WHERE collection_id = ?''', (collection_id,))
-        rows = c.fetchall()
-        return rows
+        return c.fetchall()
 
 
     def get_tracks_by_collection_name_full(self, name):
-        c = db.conn.cursor()   
+        c = db.conn.cursor()
         c.execute('''SELECT track_id, title, artist, duration, key, bpm, loudness, danceability, energy, quality, odir from tracks t
                      INNER JOIN
                      relations r  on t.track_id = r.track_id
                      INNER JOIN
                      collections c on c.collection_id = r.collection_id
                      WHERE name = ?''', (name,))
-        rows = c.fetchall()
-        return rows
+        return c.fetchall()
 
 
