@@ -1,7 +1,7 @@
 import sqlite3
 
 
-db_file ="data\decktrack.db"
+db_file ="data/decktrack.db"
 conn = sqlite3.connect(db_file, check_same_thread=False) 
 
 
