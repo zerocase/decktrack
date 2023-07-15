@@ -132,5 +132,12 @@ dmypy.json
 data/*
 
 #Local Environment
-denv/*
-dtconfig.ini
+denv/
+dekenv/
+src/dtconfig.ini
+src/dist/
+src/build/
+src/data/
+__pycache__/
+alpha-release/
+alpha-release.zip

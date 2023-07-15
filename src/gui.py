@@ -235,78 +235,79 @@ def update_table(w, h, table_matrix):
             for row in range(h):
                 with dpg.table_row(parent="Collections Info"):
                     for column in range(w):
-                        #print(row, column)
-                        #print(column)
-                        if column == 0:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label=" - ", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif column == 1:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 2:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                duration_s = int(table_matrix[row][column])
-                                duration_m = duration_s // 60
-                                duration_s = duration_s % 60
-                                dpg.add_selectable(label=str(duration_m) + "m " + str(duration_s) + "s", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 3:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 4:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                rounded_bpm = round(table_matrix[row][column], 2)
-                                dpg.add_selectable(label=str(rounded_bpm), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 5:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                rounded_loudness = round(table_matrix[row][column], 2)
-                                dpg.add_selectable(label=str(rounded_loudness), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif  column == 6:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        elif column == 7:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                pertcentage = (table_matrix[row][column] * 100)
-                                intified = int(pertcentage)
-                                dpg.add_selectable(label=str(intified), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                        else:
-                            if table_matrix[row][column] is None:
-                                dpg.add_selectable(label="-", span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
-                            else:
-                                dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
-                                dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                        match column:
+                            case 0:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label=" - ", span_columns=True, height=20)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 1:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True, height=20)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True, height=20)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 2:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    duration_s = int(table_matrix[row][column])
+                                    duration_m = duration_s // 60
+                                    duration_s = duration_s % 60
+                                    dpg.add_selectable(label=str(duration_m) + "m " + str(duration_s) + "s", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 3:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 4:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    rounded_bpm = round(table_matrix[row][column], 2)
+                                    dpg.add_selectable(label=str(rounded_bpm), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 5:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    rounded_loudness = round(table_matrix[row][column], 2)
+                                    dpg.add_selectable(label=str(rounded_loudness), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 6:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 7:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    pertcentage = (table_matrix[row][column] * 100)
+                                    intified = int(pertcentage)
+                                    dpg.add_selectable(label=str(intified), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                            case 8:
+                                if table_matrix[row][column] is None:
+                                    dpg.add_selectable(label="-", span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+                                else:
+                                    dpg.add_selectable(label=str(table_matrix[row][column]), span_columns=True)
+                                    dpg.bind_item_font(dpg.last_item(), "proggyvec-18")
+
+                            
 
 
 def init_collections_list():
@@ -347,9 +348,9 @@ def print_me():
 
 def initialize_gui_elements():
     with dpg.font_registry():
-        dpg.add_font("res\\fonts\RobotoCondensed-Regular.ttf", 22, tag="roboto-condensed-22")
-        dpg.add_font("res\\fonts\ProggyVector Regular.otf", 18, tag="proggyvec-18")
-        dpg.add_font("res\\fonts\RobotoCondensed-Bold.ttf", 36, tag="roboto-condensed-36")
+        dpg.add_font("..\\res\\fonts\RobotoCondensed-Regular.ttf", 22, tag="roboto-condensed-22")
+        dpg.add_font("..\\res\\fonts\ProggyVector Regular.otf", 18, tag="proggyvec-18")
+        dpg.add_font("..\\res\\fonts\RobotoCondensed-Bold.ttf", 36, tag="roboto-condensed-36")
     #Initialize Menu
     with dpg.menu_bar():
         with dpg.menu(label="File"):
@@ -409,7 +410,7 @@ dpg.create_context()
 
 #dpg.show_font_manager()
 
-width, height, channels, data = dpg.load_image("res\\images\\threedots.png")
+width, height, channels, data = dpg.load_image("..\\res\\images\\threedots.png")
 
 with dpg.texture_registry():
     dpg.add_static_texture(width=width, height=height, default_value=data, tag="texture_tag")

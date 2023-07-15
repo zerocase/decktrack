@@ -1,5 +1,5 @@
-from .track_manager import TrackManager
-from .collection_manager import CollectionManager
+from track_manager import TrackManager
+from collection_manager import CollectionManager
 
 # set the database file paths
 track_db_file = "data/track_data.db"
